@@ -1,35 +1,44 @@
 package io.pivotal.pal.tracker;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTimeEntryRepository implements TimeEntryRepository {
+    private Map<Long, TimeEntry> timeEntries = new HashMap<>();
+    private long timeEntryId = 0L;
 
-
-
-    public void create(long projectId, long userId, LocalDate date, int hours) throws Exception {
-
+    @Override
+    public TimeEntry create(TimeEntry timeEntry) {
+        timeEntry.setId(++timeEntryId);
+        timeEntries.put(timeEntry.getId(), timeEntry);
+        return timeEntry;
     }
 
-    public void find() throws Exception {
-
-    }
-    public void find_MissingEntry() {
-
+    @Override
+    public TimeEntry find(Long id) {
+        return timeEntries.get(id);
     }
 
-    public void list() throws Exception {
-
+    @Override
+    public List<TimeEntry> list() {
+        return new ArrayList<>(timeEntries.values());
     }
-    public void update() throws Exception {
 
+    @Override
+    public TimeEntry update(Long id, TimeEntry timeEntry) {
+        if(null != timeEntries.get(id)){
+            timeEntry.setId(id);
+            timeEntries.replace(id,timeEntry);
+            return timeEntry;
+        }else{
+            return null;
+        }
     }
-    public void update_MissingEntry() {
 
-    }
-    public void delete() throws Exception {
-
-    }
-    public void deleteKeepsTrackOfLatestIdProperly() {
-
+    @Override
+    public void delete(Long id) {
+        timeEntries.remove(id);
     }
 }
